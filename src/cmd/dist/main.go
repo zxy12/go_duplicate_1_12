@@ -151,8 +151,8 @@ func main1() {
 		os.Exit(0)
 	}
 
-	//xinit()
-	//xmain()
+	xinit()
+	xmain()
 	xexit(0)
 }
 
