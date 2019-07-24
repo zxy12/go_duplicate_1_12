@@ -25,6 +25,7 @@ import (
 import (
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Initialization for any invocation.
@@ -288,4 +289,15 @@ func compilerEnv(envName, def string) map[string]string {
 	}
 
 	return m
+}
+
+// Version prints the Go version.
+func cmdversion() {
+	xflagparse(0)
+	xprintf("%s\n", findgoversion())
+}
+
+// Remove trailing spaces.
+func chomp(s string) string {
+	return strings.TrimRight(s, " \t\r\n")
 }

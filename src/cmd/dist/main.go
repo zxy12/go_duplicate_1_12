@@ -39,7 +39,7 @@ var commands = map[string]func(){
 	// "install":   cmdinstall,
 	// "list":      cmdlist,
 	// "test":      cmdtest,
-	// "version":   cmdversion,
+	"version": cmdversion,
 }
 
 var _log_print_level int = 1

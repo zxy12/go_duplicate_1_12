@@ -71,7 +71,7 @@ func run(dir string, mode int, cmd ...string) string {
 		errprintf("run: %s\n", strings.Join(cmd, " "))
 	}
 
-	_p(1, dir, cmd)
+	_p(1, "exec: ", dir, cmd)
 	xcmd := exec.Command(cmd[0], cmd[1:]...)
 	xcmd.Dir = dir
 	var data []byte

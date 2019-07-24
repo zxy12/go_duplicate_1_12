@@ -171,3 +171,4 @@ if [ "$GOROOT_BOOTSTRAP" = "$GOROOT" ]; then
 fi
 rm -f cmd/dist/dist
 GOROOT="$GOROOT_BOOTSTRAP" GOOS="" GOARCH="" "$GOROOT_BOOTSTRAP/bin/go" build -o cmd/dist/dist ./cmd/dist
+./cmd/dist/dist version
