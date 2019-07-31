@@ -38,7 +38,7 @@ var commands = map[string]func(){
 	"clean": cmdclean,
 	"env":   cmdenv,
 	// "install":   cmdinstall,
-	// "list":      cmdlist,
+	"list": cmdlist,
 	// "test":      cmdtest,
 	"version": cmdversion,
 }
