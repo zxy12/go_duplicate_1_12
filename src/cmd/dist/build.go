@@ -61,3 +61,8 @@ func cmdlist() {
 func cmdtest() {
 	_cmdtest()
 }
+
+// Install installs the list of packages named on the command line.
+func cmdinstall() {
+	_cmdinstall()
+}

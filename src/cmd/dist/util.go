@@ -727,3 +727,131 @@ func compilerEnvLookup(m map[string]string, goos, goarch string) string {
 	}
 	return m[""]
 }
+
+// copy copies the file src to dst, via memory (so only good for small files).
+func copyfile(dst, src string, flag int) {
+	if vflag > 1 {
+		errprintf("cp %s %s\n", src, dst)
+	}
+	writefile(readfile(src), dst, flag)
+}
+
+// shouldbuild reports whether we should build this file.
+// It applies the same rules that are used with context tags
+// in package go/build, except it's less picky about the order
+// of GOOS and GOARCH.
+// We also allow the special tag cmd_go_bootstrap.
+// See ../go/bootstrap.go and package go/build.
+func shouldbuild(file, dir string) bool {
+	// Check file name for GOOS or GOARCH.
+	name := filepath.Base(file)
+	excluded := func(list []string, ok string) bool {
+		for _, x := range list {
+			if x == ok || ok == "android" && x == "linux" {
+				continue
+			}
+			i := strings.Index(name, x)
+			if i <= 0 || name[i-1] != '_' {
+				continue
+			}
+			i += len(x)
+			if i == len(name) || name[i] == '.' || name[i] == '_' {
+				return true
+			}
+		}
+		return false
+	}
+	if excluded(okgoos, goos) || excluded(okgoarch, goarch) {
+		return false
+	}
+
+	// Omit test files.
+	if strings.Contains(name, "_test") {
+		return false
+	}
+
+	// Check file contents for // +build lines.
+	for _, p := range strings.Split(readfile(file), "\n") {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		code := p
+		i := strings.Index(code, "//")
+		if i > 0 {
+			code = strings.TrimSpace(code[:i])
+		}
+		if code == "package documentation" {
+			return false
+		}
+		if code == "package main" && dir != "cmd/go" && dir != "cmd/cgo" {
+			return false
+		}
+		if !strings.HasPrefix(p, "//") {
+			break
+		}
+		if !strings.Contains(p, "+build") {
+			continue
+		}
+		fields := strings.Fields(p[2:])
+		if len(fields) < 1 || fields[0] != "+build" {
+			continue
+		}
+		for _, p := range fields[1:] {
+			if matchfield(p) {
+				goto fieldmatch
+			}
+		}
+		return false
+	fieldmatch:
+	}
+
+	return true
+}
+
+// dopack copies the package src to dst,
+// appending the files listed in extra.
+// The archive format is the traditional Unix ar format.
+func dopack(dst, src string, extra []string) {
+	bdst := bytes.NewBufferString(readfile(src))
+	for _, file := range extra {
+		b := readfile(file)
+		// find last path element for archive member name
+		i := strings.LastIndex(file, "/") + 1
+		j := strings.LastIndex(file, `\`) + 1
+		if i < j {
+			i = j
+		}
+		fmt.Fprintf(bdst, "%-16.16s%-12d%-6d%-6d%-8o%-10d`\n", file[i:], 0, 0, 0, 0644, len(b))
+		bdst.WriteString(b)
+		if len(b)&1 != 0 {
+			bdst.WriteByte(0)
+		}
+	}
+	writefile(bdst.String(), dst, 0)
+}
+
+// matchfield reports whether the field (x,y,z) matches this build.
+// all the elements in the field must be satisfied.
+func matchfield(f string) bool {
+	for _, tag := range strings.Split(f, ",") {
+		if !matchtag(tag) {
+			return false
+		}
+	}
+	return true
+}
+
+// matchtag reports whether the tag (x or !x) matches this build.
+func matchtag(tag string) bool {
+	if tag == "" {
+		return false
+	}
+	if tag[0] == '!' {
+		if len(tag) == 1 || tag[1] == '!' {
+			return false
+		}
+		return !matchtag(tag[1:])
+	}
+	return tag == "gc" || tag == goos || tag == goarch || tag == "cmd_go_bootstrap" || tag == "go1.1" || (goos == "android" && tag == "linux")
+}

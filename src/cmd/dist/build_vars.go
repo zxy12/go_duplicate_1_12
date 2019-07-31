@@ -176,3 +176,39 @@ var (
 )
 
 var toolchain = []string{"cmd/asm", "cmd/cgo", "cmd/compile", "cmd/link"}
+
+// installed maps from a dir name (as given to install) to a chan
+// closed when the dir's package is installed.
+var installed = make(map[string]chan struct{})
+var installedMu sync.Mutex
+
+/*
+ * Tool building
+ */
+
+// deptab lists changes to the default dependencies for a given prefix.
+// deps ending in /* read the whole directory; deps beginning with -
+// exclude files with that prefix.
+// Note that this table applies only to the build of cmd/go,
+// after the main compiler bootstrap.
+var deptab = []struct {
+	prefix string   // prefix of target
+	dep    []string // dependency tweaks for targets with that prefix
+}{
+	{"cmd/go/internal/cfg", []string{
+		"zdefaultcc.go",
+		"zosarch.go",
+	}},
+	{"runtime/internal/sys", []string{
+		"zversion.go",
+	}},
+	{"go/build", []string{
+		"zcgo.go",
+	}},
+}
+
+// depsuffix records the allowed suffixes for source files.
+var depsuffix = []string{
+	".s",
+	".go",
+}

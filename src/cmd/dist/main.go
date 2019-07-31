@@ -35,9 +35,9 @@ All commands take -v flags to emit extra information.
 var commands = map[string]func(){
 	"banner": cmdbanner,
 	// "bootstrap": cmdbootstrap,
-	"clean": cmdclean,
-	"env":   cmdenv,
-	// "install":   cmdinstall,
+	"clean":   cmdclean,
+	"env":     cmdenv,
+	"install": cmdinstall,
 	"list":    cmdlist,
 	"test":    cmdtest,
 	"version": cmdversion,
