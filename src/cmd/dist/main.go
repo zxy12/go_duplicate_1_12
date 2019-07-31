@@ -10,6 +10,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 )
 
 func usage() {
@@ -34,7 +35,7 @@ All commands take -v flags to emit extra information.
 var commands = map[string]func(){
 	"banner": cmdbanner,
 	// "bootstrap": cmdbootstrap,
-	// "clean":     cmdclean,
+	"clean": cmdclean,
 	// "env":       cmdenv,
 	// "install":   cmdinstall,
 	// "list":      cmdlist,
@@ -180,5 +181,12 @@ func _p(lev int, args ...interface{}) {
 	if lev < _log_print_level {
 		return
 	}
+	t := nowTime()
+	fmt.Print(t, " ")
 	fmt.Println(args...)
+}
+
+func nowTime() string {
+	x := time.Now().Format("[15:04:05]")
+	return x
 }
