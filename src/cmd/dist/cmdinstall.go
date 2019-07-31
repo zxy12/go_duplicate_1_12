@@ -77,7 +77,6 @@ func runInstall(dir string, ch chan struct{}) {
 	}
 
 	workdir := pathf("%s/%s", workdir, dir)
-	xmkdirall(workdir)
 
 	var clean []string
 	defer func() {
@@ -114,6 +113,7 @@ func runInstall(dir string, ch chan struct{}) {
 		link = []string{pathf("%s/link", tooldir), "-o", pathf("%s/%s%s", tooldir, elem, exe)}
 		targ = len(link) - 1
 	}
+	_p(1, "link=", dir, link, "ttarg=", link[targ])
 	ttarg := mtime(link[targ])
 
 	// Gather files that are sources for this target.

@@ -33,14 +33,14 @@ All commands take -v flags to emit extra information.
 
 // commands records the available commands.
 var commands = map[string]func(){
-	"banner": cmdbanner,
-	// "bootstrap": cmdbootstrap,
-	"clean":   cmdclean,
-	"env":     cmdenv,
-	"install": cmdinstall,
-	"list":    cmdlist,
-	"test":    cmdtest,
-	"version": cmdversion,
+	"banner":    cmdbanner,
+	"bootstrap": cmdbootstrap,
+	"clean":     cmdclean,
+	"env":       cmdenv,
+	"install":   cmdinstall,
+	"list":      cmdlist,
+	"test":      cmdtest,
+	"version":   cmdversion,
 }
 
 var _log_print_level int = 1
@@ -206,6 +206,11 @@ func _pfs(lev int, format string, args ...string) {
 	t := nowTime()
 	fmt.Print(t, " ")
 	fmt.Printf(format, s...)
+}
+
+func _logret() {
+	_, file1, line1, _ := runtime.Caller(1)
+	_pf(100, "RETURN AT:%s:%d", file1, line1)
 }
 
 func nowTime() string {

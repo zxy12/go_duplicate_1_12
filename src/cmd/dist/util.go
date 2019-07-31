@@ -71,7 +71,7 @@ func run(dir string, mode int, cmd ...string) string {
 		errprintf("run: %s\n", strings.Join(cmd, " "))
 	}
 
-	_pf(1, "exec: %s/%s\n", dir, strings.Join(cmd, " "))
+	_pf(1, "exec: %s/ %s\n", dir, strings.Join(cmd, " "))
 	xcmd := exec.Command(cmd[0], cmd[1:]...)
 	xcmd.Dir = dir
 	var data []byte
@@ -283,7 +283,11 @@ func xremove(p string) {
 }
 
 // xremoveall removes the file or directory tree rooted at p.
-func xremoveall(p string) {
+func xremoveall(p string, nolog ...int) {
+	if nolog == nil {
+		_p(1, "[rm file:]", p)
+	}
+
 	if vflag > 2 {
 		errprintf("rm -r %s\n", p)
 	}
@@ -510,7 +514,7 @@ func rmworkdir() {
 	if vflag > 1 {
 		errprintf("rm -rf %s\n", workdir)
 	}
-	xremoveall(workdir)
+	xremoveall(workdir, 1)
 }
 
 // compilerEnv returns a map from "goos/goarch" to the
@@ -730,6 +734,7 @@ func compilerEnvLookup(m map[string]string, goos, goarch string) string {
 
 // copy copies the file src to dst, via memory (so only good for small files).
 func copyfile(dst, src string, flag int) {
+	_pf(1, "[ %s --> %s]\n", src, dst)
 	if vflag > 1 {
 		errprintf("cp %s %s\n", src, dst)
 	}

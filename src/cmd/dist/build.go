@@ -66,3 +66,7 @@ func cmdtest() {
 func cmdinstall() {
 	_cmdinstall()
 }
+
+func cmdbootstrap() {
+	_cmdbootstrap()
+}

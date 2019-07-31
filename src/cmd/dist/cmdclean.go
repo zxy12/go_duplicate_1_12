@@ -5,8 +5,10 @@ import (
 )
 
 func clean() {
+
 	for _, name := range cleanlist {
 		path := pathf("%s/src/%s", goroot, name)
+
 		// Remove generated files.
 		for _, elem := range xreaddir(path) {
 			for _, gt := range gentab {
