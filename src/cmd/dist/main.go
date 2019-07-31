@@ -38,8 +38,8 @@ var commands = map[string]func(){
 	"clean": cmdclean,
 	"env":   cmdenv,
 	// "install":   cmdinstall,
-	"list": cmdlist,
-	// "test":      cmdtest,
+	"list":    cmdlist,
+	"test":    cmdtest,
 	"version": cmdversion,
 }
 
@@ -193,6 +193,19 @@ func _pf(lev int, format string, args ...interface{}) {
 	t := nowTime()
 	fmt.Print(t, " ")
 	fmt.Printf(format, args...)
+}
+
+func _pfs(lev int, format string, args ...string) {
+	if lev < _log_print_level {
+		return
+	}
+	s := []interface{}{}
+	for _, v := range args {
+		s = append(s, v)
+	}
+	t := nowTime()
+	fmt.Print(t, " ")
+	fmt.Printf(format, s...)
 }
 
 func nowTime() string {

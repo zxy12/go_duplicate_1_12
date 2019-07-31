@@ -71,7 +71,7 @@ func run(dir string, mode int, cmd ...string) string {
 		errprintf("run: %s\n", strings.Join(cmd, " "))
 	}
 
-	_p(1, "exec: ", dir, cmd)
+	_pf(1, "exec: %s/%s\n", dir, strings.Join(cmd, " "))
 	xcmd := exec.Command(cmd[0], cmd[1:]...)
 	xcmd.Dir = dir
 	var data []byte
@@ -685,4 +685,45 @@ func xinit() {
 	xatexit(rmworkdir)
 
 	tooldir = pathf("%s/pkg/tool/%s_%s", goroot, gohostos, gohostarch)
+}
+
+func goInstall(goBinary string, args ...string) {
+	installCmd := []string{goBinary, "install", "-gcflags=all=" + gogcflags, "-ldflags=all=" + goldflags}
+	if vflag > 0 {
+		installCmd = append(installCmd, "-v")
+	}
+
+	// Force only one process at a time on vx32 emulation.
+	if gohostos == "plan9" && os.Getenv("sysname") == "vx32" {
+		installCmd = append(installCmd, "-p=1")
+	}
+
+	run(goroot, ShowOutput|CheckExit, append(installCmd, args...)...)
+}
+
+func checkNotStale(goBinary string, targets ...string) {
+	out := run(goroot, CheckExit,
+		append([]string{
+			goBinary,
+			"list", "-gcflags=all=" + gogcflags, "-ldflags=all=" + goldflags,
+			"-f={{if .Stale}}\tSTALE {{.ImportPath}}: {{.StaleReason}}{{end}}",
+		}, targets...)...)
+	if strings.Contains(out, "\tSTALE ") {
+		os.Setenv("GODEBUG", "gocachehash=1")
+		for _, target := range []string{"runtime/internal/sys", "cmd/dist", "cmd/link"} {
+			if strings.Contains(out, "STALE "+target) {
+				run(goroot, ShowOutput|CheckExit, goBinary, "list", "-f={{.ImportPath}} {{.Stale}}", target)
+				break
+			}
+		}
+		fatalf("unexpected stale targets reported by %s list -gcflags=\"%s\" -ldflags=\"%s\" for %v:\n%s", goBinary, gogcflags, goldflags, targets, out)
+	}
+}
+
+// compilerEnvLookup returns the compiler settings for goos/goarch in map m.
+func compilerEnvLookup(m map[string]string, goos, goarch string) string {
+	if cc := m[goos+"/"+goarch]; cc != "" {
+		return cc
+	}
+	return m[""]
 }

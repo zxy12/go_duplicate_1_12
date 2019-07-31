@@ -57,3 +57,7 @@ func cmdenv() {
 func cmdlist() {
 	_cmdlist()
 }
+
+func cmdtest() {
+	_cmdtest()
+}

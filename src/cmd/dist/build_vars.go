@@ -1,5 +1,11 @@
 package main
 
+import (
+	"os"
+	"sync"
+	"time"
+)
+
 // Initialization for any invocation.
 
 // The usual variables.
@@ -161,3 +167,12 @@ var incomplete = map[string]bool{
 	"linux/riscv64": true,
 	"linux/sparc64": true,
 }
+
+var (
+	timeLogEnabled = os.Getenv("GOBUILDTIMELOGFILE") != ""
+	timeLogMu      sync.Mutex
+	timeLogFile    *os.File
+	timeLogStart   time.Time
+)
+
+var toolchain = []string{"cmd/asm", "cmd/cgo", "cmd/compile", "cmd/link"}

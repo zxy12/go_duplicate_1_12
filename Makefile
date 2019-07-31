@@ -1,5 +1,5 @@
 test:
-	./src/cmd/dist/dist list
+	./src/cmd/dist/dist test
 all:
 	export GOROOT_BOOTSTRAP=/Users/zhouxinyu/www/localhost/src/github.com/golang/go1.4 && cd ./src && ./make.bash
 
