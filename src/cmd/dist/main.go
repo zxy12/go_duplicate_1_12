@@ -32,7 +32,7 @@ All commands take -v flags to emit extra information.
 
 // commands records the available commands.
 var commands = map[string]func(){
-	// "banner":    cmdbanner,
+	"banner": cmdbanner,
 	// "bootstrap": cmdbootstrap,
 	// "clean":     cmdclean,
 	// "env":       cmdenv,

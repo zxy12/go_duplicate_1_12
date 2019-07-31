@@ -297,6 +297,12 @@ func cmdversion() {
 	xprintf("%s\n", findgoversion())
 }
 
+// Banner prints the 'now you've installed Go' banner.
+func cmdbanner() {
+	xflagparse(0)
+	banner()
+}
+
 // Remove trailing spaces.
 func chomp(s string) string {
 	return strings.TrimRight(s, " \t\r\n")
