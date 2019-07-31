@@ -199,3 +199,12 @@ func cmdclean() {
 	xflagparse(0)
 	clean()
 }
+
+/*
+ * command implementations
+ */
+
+// The env command prints the default environment.
+func cmdenv() {
+	_cmdenv()
+}
