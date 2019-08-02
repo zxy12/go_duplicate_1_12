@@ -176,6 +176,8 @@ func runInstall(dir string, ch chan struct{}) {
 		return true
 	})
 
+	_p(1, "install remains file:", files)
+
 	// If there are no files to compile, we're done.
 	if len(files) == 0 {
 		return
@@ -231,6 +233,7 @@ func runInstall(dir string, ch chan struct{}) {
 	for _, p := range gofiles {
 		deps = append(deps, readimports(p)...)
 	}
+	_p(0, "deps=", deps)
 	for _, dir1 := range deps {
 		startInstall(dir1)
 	}
@@ -300,6 +303,7 @@ func runInstall(dir string, ch chan struct{}) {
 	if gogcflags != "" {
 		compile = append(compile, strings.Fields(gogcflags)...)
 	}
+
 	if dir == "runtime" {
 		compile = append(compile, "-+")
 	}
@@ -325,6 +329,8 @@ func runInstall(dir string, ch chan struct{}) {
 	bgrun(&wg, path, compile...)
 	bgwait(&wg)
 
+	_logret()
+	return
 	// Compile the files.
 	for _, p := range sfiles {
 		// Assembly file for a Go package.

@@ -1,2 +1,3 @@
 src/cmd/dist/dist
+pkg/
 VERSION.cache

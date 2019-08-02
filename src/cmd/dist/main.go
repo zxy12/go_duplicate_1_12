@@ -177,11 +177,12 @@ func xmain() {
 	}
 }
 
+// function list for zxy
 func _p(lev int, args ...interface{}) {
 	if lev < _log_print_level {
 		return
 	}
-	t := nowTime()
+	t := _nowTime()
 	fmt.Print(t, " ")
 	fmt.Println(args...)
 }
@@ -190,7 +191,7 @@ func _pf(lev int, format string, args ...interface{}) {
 	if lev < _log_print_level {
 		return
 	}
-	t := nowTime()
+	t := _nowTime()
 	fmt.Print(t, " ")
 	fmt.Printf(format, args...)
 }
@@ -203,17 +204,24 @@ func _pfs(lev int, format string, args ...string) {
 	for _, v := range args {
 		s = append(s, v)
 	}
-	t := nowTime()
+	t := _nowTime()
 	fmt.Print(t, " ")
 	fmt.Printf(format, s...)
 }
 
 func _logret() {
 	_, file1, line1, _ := runtime.Caller(1)
-	_pf(100, "RETURN AT:%s:%d", file1, line1)
+	_pf(100, "RETURN AT:%s:%d\n", file1, line1)
 }
 
-func nowTime() string {
+func _nowTime() string {
 	x := time.Now().Format("[15:04:05]")
 	return x
+}
+
+func _sleep(sec uint) {
+	if sec <= 0 {
+		return
+	}
+	time.Sleep(time.Duration(sec) * time.Second)
 }

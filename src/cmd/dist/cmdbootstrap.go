@@ -76,6 +76,8 @@ func _cmdbootstrap() {
 
 	install("runtime") // dependency not visible in sources; also sets up textflag.h
 
+	_logret()
+	return
 	install("cmd/go")
 	if vflag > 0 {
 		xprintf("\n")
