@@ -9,9 +9,9 @@ import (
 	// "flag"
 	// "fmt"
 	"log"
-	// "os"
+	//"os"
 	//
-	// "cmd/asm/internal/arch"
+	"cmd/asm/internal/arch"
 	// "cmd/asm/internal/asm"
 	// "cmd/asm/internal/flags"
 	// "cmd/asm/internal/lex"
@@ -25,13 +25,13 @@ func main() {
 	log.SetFlags(log.LstdFlags)
 	log.SetPrefix("asm: ")
 	GOARCH := objabi.GOARCH
-	_ = GOARCH
-	/*
+	log.Println(GOARCH)
 
-	   architecture := arch.Set(GOARCH)
-	   if architecture == nil {
-	       log.Fatalf("unrecognized architecture %s", GOARCH)
-	   }
+	architecture := arch.Set(GOARCH)
+	if architecture == nil {
+		log.Fatalf("unrecognized architecture %s", GOARCH)
+	}
+	/*
 
 	   flags.Parse()
 
