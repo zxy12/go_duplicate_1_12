@@ -7,6 +7,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"runtime"
 	"strings"
@@ -46,6 +47,8 @@ var commands = map[string]func(){
 var _log_print_level int = 1
 
 func main() {
+	log.SetPrefix("TRACE: ")
+	log.SetFlags(log.Ltime)
 	main1()
 }
 
@@ -182,9 +185,8 @@ func _p(lev int, args ...interface{}) {
 	if lev < _log_print_level {
 		return
 	}
-	t := _nowTime()
-	fmt.Print(t, " ")
-	fmt.Println(args...)
+
+	log.Println(args...)
 }
 
 func _pf(lev int, format string, args ...interface{}) {

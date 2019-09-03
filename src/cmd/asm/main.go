@@ -5,19 +5,19 @@
 package main
 
 import (
-	// "bufio"
+	"bufio"
 	// "flag"
 	// "fmt"
 	"log"
-	//"os"
+	"os"
 	//
 	"cmd/asm/internal/arch"
 	// "cmd/asm/internal/asm"
-	// "cmd/asm/internal/flags"
+	"cmd/asm/internal/flags"
 	// "cmd/asm/internal/lex"
 	//
 	// "cmd/internal/bio"
-	// "cmd/internal/obj"
+	"cmd/internal/obj"
 	"cmd/internal/objabi"
 )
 
@@ -31,21 +31,26 @@ func main() {
 	if architecture == nil {
 		log.Fatalf("unrecognized architecture %s", GOARCH)
 	}
+
+	flags.Parse()
+
+	ctxt := obj.Linknew(architecture.LinkArch)
+	log.Printf("ctxt=%v", ctxt)
+
+	if *flags.PrintOut {
+		ctxt.Debugasm = 1
+	}
+
+	ctxt.Flag_dynlink = *flags.Dynlink
+	ctxt.Flag_shared = *flags.Shared || *flags.Dynlink
+
+	ctxt.Bso = bufio.NewWriter(os.Stdout)
+
+	defer ctxt.Bso.Flush()
+
+	architecture.Init(ctxt)
+
 	/*
-
-	   flags.Parse()
-
-	   ctxt := obj.Linknew(architecture.LinkArch)
-	   if *flags.PrintOut {
-	       ctxt.Debugasm = 1
-	   }
-	   ctxt.Flag_dynlink = *flags.Dynlink
-	   ctxt.Flag_shared = *flags.Shared || *flags.Dynlink
-	   ctxt.Bso = bufio.NewWriter(os.Stdout)
-	   defer ctxt.Bso.Flush()
-
-	   architecture.Init(ctxt)
-
 	   // Create object file, write header.
 	   out, err := os.Create(*flags.OutputFile)
 	   if err != nil {
