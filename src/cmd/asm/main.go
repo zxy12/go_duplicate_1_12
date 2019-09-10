@@ -6,8 +6,8 @@ package main
 
 import (
 	"bufio"
-	// "flag"
-	// "fmt"
+	"flag"
+	"fmt"
 	"log"
 	"os"
 	//
@@ -16,7 +16,7 @@ import (
 	"cmd/asm/internal/flags"
 	// "cmd/asm/internal/lex"
 	//
-	// "cmd/internal/bio"
+	"cmd/internal/bio"
 	"cmd/internal/obj"
 	"cmd/internal/objabi"
 )
@@ -50,44 +50,49 @@ func main() {
 
 	architecture.Init(ctxt)
 
+	// Create object file, write header.
+	out, err := os.Create(*flags.OutputFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer bio.MustClose(out)
+
+	buf := bufio.NewWriter(bio.MustWriter(out))
+
+	if !*flags.SymABIs {
+		fmt.Fprintf(buf, "go object %s %s %s\n", objabi.GOOS, objabi.GOARCH, objabi.Version)
+		fmt.Fprintf(buf, "!\n")
+	}
+
+	//var ok, diag bool
+	//var failedFile string
+
+	for _, f := range flag.Args() {
+		// lexer := lex.NewLexer(f)
+		// parser := asm.NewParser(ctxt, architecture, lexer)
+		// ctxt.DiagFunc = func(format string, args ...interface{}) {
+		// 	diag = true
+		// 	log.Printf(format, args...)
+		// }
+		// if *flags.SymABIs {
+		// 	ok = parser.ParseSymABIs(buf)
+		// } else {
+		// 	pList := new(obj.Plist)
+		// 	pList.Firstpc, ok = parser.Parse()
+		// 	// reports errors to parser.Errorf
+		// 	if ok {
+		// 		obj.Flushplist(ctxt, pList, nil, "")
+		// 	}
+		// }
+		// if !ok {
+		// 	failedFile = f
+		// 	break
+		// }
+		_ = f
+	}
+
 	/*
-	   // Create object file, write header.
-	   out, err := os.Create(*flags.OutputFile)
-	   if err != nil {
-	       log.Fatal(err)
-	   }
-	   defer bio.MustClose(out)
-	   buf := bufio.NewWriter(bio.MustWriter(out))
-
-	   if !*flags.SymABIs {
-	       fmt.Fprintf(buf, "go object %s %s %s\n", objabi.GOOS, objabi.GOARCH, objabi.Version)
-	       fmt.Fprintf(buf, "!\n")
-	   }
-
-	   var ok, diag bool
-	   var failedFile string
-	   for _, f := range flag.Args() {
-	       lexer := lex.NewLexer(f)
-	       parser := asm.NewParser(ctxt, architecture, lexer)
-	       ctxt.DiagFunc = func(format string, args ...interface{}) {
-	           diag = true
-	           log.Printf(format, args...)
-	       }
-	       if *flags.SymABIs {
-	           ok = parser.ParseSymABIs(buf)
-	       } else {
-	           pList := new(obj.Plist)
-	           pList.Firstpc, ok = parser.Parse()
-	           // reports errors to parser.Errorf
-	           if ok {
-	               obj.Flushplist(ctxt, pList, nil, "")
-	           }
-	       }
-	       if !ok {
-	           failedFile = f
-	           break
-	       }
-	   }
 	   if ok && !*flags.SymABIs {
 	       obj.WriteObjFile(ctxt, buf)
 	   }
@@ -101,6 +106,7 @@ func main() {
 	       os.Remove(*flags.OutputFile)
 	       os.Exit(1)
 	   }
-	   buf.Flush()
 	*/
+	buf.Flush()
+
 }
