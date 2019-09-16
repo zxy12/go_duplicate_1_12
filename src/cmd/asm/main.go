@@ -14,7 +14,7 @@ import (
 	"cmd/asm/internal/arch"
 	// "cmd/asm/internal/asm"
 	"cmd/asm/internal/flags"
-	// "cmd/asm/internal/lex"
+	"cmd/asm/internal/lex"
 	//
 	"cmd/internal/bio"
 	"cmd/internal/obj"
@@ -68,8 +68,10 @@ func main() {
 	//var ok, diag bool
 	//var failedFile string
 
-	for _, f := range flag.Args() {
-		// lexer := lex.NewLexer(f)
+	for i, f := range flag.Args() {
+		log.Println("arg-", i, f)
+		lexer := lex.NewLexer(f)
+		_ = lexer
 		// parser := asm.NewParser(ctxt, architecture, lexer)
 		// ctxt.DiagFunc = func(format string, args ...interface{}) {
 		// 	diag = true
