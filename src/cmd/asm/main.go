@@ -12,7 +12,7 @@ import (
 	"os"
 	//
 	"cmd/asm/internal/arch"
-	// "cmd/asm/internal/asm"
+	"cmd/asm/internal/asm"
 	"cmd/asm/internal/flags"
 	"cmd/asm/internal/lex"
 	//
@@ -35,7 +35,7 @@ func main() {
 	flags.Parse()
 
 	ctxt := obj.Linknew(architecture.LinkArch)
-	log.Printf("ctxt=%v", ctxt)
+	log.Printf("ctxt=%+v\narchitecture=%+v", ctxt, architecture)
 
 	if *flags.PrintOut {
 		ctxt.Debugasm = 1
@@ -65,50 +65,48 @@ func main() {
 		fmt.Fprintf(buf, "!\n")
 	}
 
-	//var ok, diag bool
-	//var failedFile string
+	var ok, diag bool
+	var failedFile string
 
 	for i, f := range flag.Args() {
 		log.Println("arg-", i, f)
 		lexer := lex.NewLexer(f)
-		_ = lexer
-		// parser := asm.NewParser(ctxt, architecture, lexer)
-		// ctxt.DiagFunc = func(format string, args ...interface{}) {
-		// 	diag = true
-		// 	log.Printf(format, args...)
-		// }
-		// if *flags.SymABIs {
-		// 	ok = parser.ParseSymABIs(buf)
-		// } else {
-		// 	pList := new(obj.Plist)
-		// 	pList.Firstpc, ok = parser.Parse()
-		// 	// reports errors to parser.Errorf
-		// 	if ok {
-		// 		obj.Flushplist(ctxt, pList, nil, "")
-		// 	}
-		// }
-		// if !ok {
-		// 	failedFile = f
-		// 	break
-		// }
-		_ = f
+		parser := asm.NewParser(ctxt, architecture, lexer)
+
+		ctxt.DiagFunc = func(format string, args ...interface{}) {
+			diag = true
+			log.Printf(format, args...)
+		}
+		if *flags.SymABIs {
+			// 	ok = parser.ParseSymABIs(buf)
+		} else {
+			pList := new(obj.Plist)
+			pList.Firstpc, ok = parser.Parse()
+			// reports errors to parser.Errorf
+			if ok {
+				obj.Flushplist(ctxt, pList, nil, "")
+			}
+		}
+		if !ok {
+			failedFile = f
+			break
+		}
 	}
 
-	/*
-	   if ok && !*flags.SymABIs {
-	       obj.WriteObjFile(ctxt, buf)
-	   }
-	   if !ok || diag {
-	       if failedFile != "" {
-	           log.Printf("assembly of %s failed", failedFile)
-	       } else {
-	           log.Print("assembly failed")
-	       }
-	       out.Close()
-	       os.Remove(*flags.OutputFile)
-	       os.Exit(1)
-	   }
-	*/
+	if ok && !*flags.SymABIs {
+		obj.WriteObjFile(ctxt, buf)
+	}
+	if !ok || diag {
+		if failedFile != "" {
+			log.Printf("assembly of %s failed", failedFile)
+		} else {
+			log.Print("assembly failed")
+		}
+		out.Close()
+		os.Remove(*flags.OutputFile)
+		os.Exit(1)
+	}
+
 	buf.Flush()
 
 }
