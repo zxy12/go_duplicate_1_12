@@ -94,6 +94,8 @@ func (p *Parser) Parse() (*obj.Prog, bool) {
 	scratch := make([][]lex.Token, 0, 3)
 	for {
 		word, cond, operands, ok := p.line(scratch)
+
+		fmt.Printf("parse word[%v],cond[%v],operands[%v],ok[%v]\n", word, cond, operands, ok)
 		if !ok {
 			break
 		}
@@ -147,10 +149,13 @@ next:
 	var tok lex.ScanToken
 	for {
 		tok = p.lex.Next()
+
 		// We save the line number here so error messages from this instruction
 		// are labeled with this line. Otherwise we complain after we've absorbed
 		// the terminating newline and the line numbers are off by one in errors.
 		p.lineNum = p.lex.Line()
+		tt := p.lex.Text()
+		fmt.Printf("get a tok:[%+v],[%T],[%v],[%v]\n\n", tt, tt, p.lineNum, tok)
 		switch tok {
 		case '\n', ';':
 			continue
@@ -159,6 +164,9 @@ next:
 		}
 		break
 	}
+	tt := p.lex.Text()
+	fmt.Printf("get a tok:[%+v],[%T]\n", tt, tt)
+
 	// First item must be an identifier.
 	if tok != scanner.Ident {
 		p.errorf("expected identifier, found %q", p.lex.Text())

@@ -102,7 +102,9 @@ func (in *Input) Next() ScanToken {
 	// If we cannot generate a token after 100 macro invocations, we're in trouble.
 	// The usual case is caught by Push, below, but be safe.
 	for nesting := 0; nesting < 100; {
+		println("")
 		tok := in.Stack.Next()
+		fmt.Println("input reader:", tok)
 		switch tok {
 		case '#':
 			if !in.beginningOfLine {
@@ -215,6 +217,7 @@ func (in *Input) defineMacro(name string, args []string, tokens []Token) {
 // formal argument names.
 func (in *Input) macroDefinition(name string) ([]string, []Token) {
 	prevCol := in.Stack.Col()
+	fmt.Println("define-prevcol:", prevCol)
 	tok := in.Stack.Next()
 	if tok == '\n' || tok == scanner.EOF {
 		return nil, nil // No definition for macro

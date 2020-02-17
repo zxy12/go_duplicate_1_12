@@ -14,6 +14,7 @@ import (
 	"cmd/asm/internal/flags"
 	"cmd/internal/objabi"
 	"cmd/internal/src"
+	"fmt"
 )
 
 // A Tokenizer is a simple wrapping of text/scanner.Scanner, configured
@@ -112,6 +113,7 @@ func (t *Tokenizer) Next() ScanToken {
 		// TODO: If we ever have //go: comments in assembly, will need to keep them here.
 		// For now, just discard all comments.
 	}
+	fmt.Println("text-intokenizer:", s.TokenText(), ",pos:", s.Pos(), ",peek:", s.Peek())
 	switch t.tok {
 	case '\n':
 		t.line++

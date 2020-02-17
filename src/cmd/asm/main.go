@@ -10,11 +10,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+
 	//
 	"cmd/asm/internal/arch"
 	"cmd/asm/internal/asm"
 	"cmd/asm/internal/flags"
 	"cmd/asm/internal/lex"
+
 	//
 	"cmd/internal/bio"
 	"cmd/internal/obj"
@@ -67,7 +69,6 @@ func main() {
 
 	var ok, diag bool
 	var failedFile string
-
 	for i, f := range flag.Args() {
 		log.Println("arg-", i, f)
 		lexer := lex.NewLexer(f)
@@ -82,6 +83,7 @@ func main() {
 		} else {
 			pList := new(obj.Plist)
 			pList.Firstpc, ok = parser.Parse()
+			log.Printf("firstpc[%v],ok[%v]\n", pList.Firstpc, ok)
 			// reports errors to parser.Errorf
 			if ok {
 				obj.Flushplist(ctxt, pList, nil, "")
